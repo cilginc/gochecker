@@ -37,10 +37,11 @@ func checkYAML(cmd *cobra.Command, args []string) error {
 	return nil
 }
 
+// [TODO]: make this into internal/
 func loadConfig(path string) (*pkg.Config, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
-		return nil, cliError("failed to read %s: %v", path, err)
+		return nil, ui.CliError("failed to read %s: %v", path, err)
 	}
 
 	decoder := yaml.NewDecoder(
@@ -50,15 +51,16 @@ func loadConfig(path string) (*pkg.Config, error) {
 
 	var cfg pkg.Config
 	if err := decoder.Decode(&cfg); err != nil {
-		return nil, cliError("invalid %s: %v", path, err)
+		return nil, ui.CliError("invalid %s: %v", path, err)
 	}
 
 	return &cfg, nil
 }
 
+// [TODO]: make this into internal/
 func validateConfig(cfg *pkg.Config) error {
 	if len(cfg.Packages) == 0 {
-		return cliError("no packages defined in config")
+		return ui.CliError("no packages defined in config")
 	}
 	return nil
 }
@@ -77,9 +79,4 @@ func printConfig(cfg *pkg.Config) {
 		fmt.Println("  ", ui.Warn("⚠ You need to specify a valid provider."))
 		fmt.Println()
 	}
-}
-
-func cliError(format string, a ...any) error {
-	msg := fmt.Sprintf(format, a...)
-	return fmt.Errorf("%s %s", ui.Err("✖ Error:"), msg)
 }
