@@ -11,6 +11,9 @@
 # Test binary, built with `go test -c`
 *.test
 
+# For build directories
+build/
+
 # Code coverage profiles and other test artifacts
 *.out
 coverage.*
@@ -26,6 +29,9 @@ go.work.sum
 
 # env file
 .env
+
+# This is for testing purposes only
+.gochecker.yaml
 
 # Editor/IDE
 # .idea/
