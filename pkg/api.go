@@ -1,14 +1,14 @@
 package pkg
 
-import (
-	"errors"
-	"net/http"
-)
-
 // Package represents a version check target.
 type Package struct {
 	Name     string   `yaml:"name"    json:"name"`
+	Version  string   `yaml:"version" json:"version"`
 	Provider Provider `yaml:",inline" json:",inline"`
+}
+
+type VersionFile struct {
+	Packages map[string]string `json:"packages"`
 }
 
 // Provider defines which upstream source is used.
@@ -34,13 +34,7 @@ type Result struct {
 	Error      error
 }
 
-// [TODO]: improve error messages
-var (
-	ErrInvalidConfig   = errors.New("invalid config")
-	ErrUnknownProvider = errors.New("unknown provider")
-)
+const DEFAULT_CONFIG_FILE = ".gochecker.yaml"
+const DEFAULT_VERSIONS_FILE = ".gochecker-lock.json"
 
-type Client struct {
-	workers int
-	http    *http.Client
-}
+const GITHUB_PAT_TOKEN_ENV_VAR = "GITHUB_TOKEN"

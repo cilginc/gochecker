@@ -3,11 +3,9 @@ package cmd
 import (
 	"context"
 	"fmt"
-	"sync"
 
-	"github.com/cilginc/gochecker/internal/providers"
 	"github.com/cilginc/gochecker/internal/ui"
-	"github.com/cilginc/gochecker/pkg"
+	"github.com/cilginc/gochecker/pkg/engine"
 	"github.com/spf13/cobra"
 )
 
@@ -24,40 +22,25 @@ func init() {
 }
 
 func runThis(cmd *cobra.Command, args []string) error {
-	cfg, err := loadConfig(".gochecker.yaml")
+	ctx := context.Background()
+
+	results, err := engine.Execute(ctx)
 	if err != nil {
 		return err
 	}
 
-	if err := validateConfig(cfg); err != nil {
-		return err
+	for _, r := range results {
+		if r.Error != nil {
+			ui.CliError("%s: %v", r.Name, r.Error)
+			continue
+		}
+
+		if r.Updated {
+			fmt.Println(ui.Title(r.Name), ui.Success(r.NewVersion))
+		} else {
+			fmt.Println(ui.Title(r.Name), ui.Info("up-to-date"))
+		}
 	}
 
-	ctx := context.Background()
-	var wg sync.WaitGroup
-
-	for _, p := range cfg.Packages {
-		wg.Add(1)
-
-		go func(pkg pkg.Package) {
-			defer wg.Done()
-
-			if pkg.Provider.GitHub != nil {
-				provider := &providers.GitHub{
-					GitHub: pkg.Provider.GitHub,
-				}
-
-				version, err := provider.LatestVersion(ctx)
-				if err != nil {
-					fmt.Printf("%s: %v\n", ui.Err("Error"), err)
-					return
-				}
-
-				fmt.Println(ui.Title(pkg.Name), ui.Info(version))
-			}
-		}(p)
-	}
-
-	wg.Wait()
 	return nil
 }
