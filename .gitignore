@@ -32,6 +32,7 @@ go.work.sum
 
 # This is for testing purposes only
 .gochecker.yaml
+.gochecker-lock.json
 
 # Editor/IDE
 # .idea/
