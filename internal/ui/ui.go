@@ -41,7 +41,11 @@ func PrintInfo(a ...any) {
 
 func CliError(format string, a ...any) error {
 	msg := fmt.Sprintf(format, a...)
-	return fmt.Errorf("%s %s", Err("✖ Error:"), msg)
+	formattedMsg := fmt.Sprintf("%s %s", Err("✖ Error:"), msg)
+
+	fmt.Println(formattedMsg)
+
+	return fmt.Errorf("%s", formattedMsg)
 }
 
 func CliSuccess(format string, a ...any) {
