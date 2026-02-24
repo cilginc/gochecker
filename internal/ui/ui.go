@@ -43,3 +43,18 @@ func CliError(format string, a ...any) error {
 	msg := fmt.Sprintf(format, a...)
 	return fmt.Errorf("%s %s", Err("✖ Error:"), msg)
 }
+
+func CliSuccess(format string, a ...any) {
+	msg := fmt.Sprintf(format, a...)
+	fmt.Printf("%s %s\n", Success("✔ Success:"), msg)
+}
+
+func CliInfo(format string, a ...any) {
+	msg := fmt.Sprintf(format, a...)
+	fmt.Printf("%s %s\n", Info("ℹ Info:"), msg)
+}
+
+func CliWarn(format string, a ...any) {
+	msg := fmt.Sprintf(format, a...)
+	fmt.Printf("%s %s\n", Warn("⚠ Warning:"), msg)
+}
