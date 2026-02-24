@@ -9,6 +9,13 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var (
+	cfgFile      string = pkg.DEFAULT_CONFIG_FILE
+	versionFile  string = pkg.DEFAULT_VERSIONS_FILE
+	outputFormat string = "text"
+	noColor      bool   = false
+)
+
 var rootCmd = &cobra.Command{
 	Use:   "gochecker",
 	Short: "A fast and modern version checker for software packages",
@@ -34,37 +41,38 @@ func init() {
 
 	f := rootCmd.PersistentFlags()
 
-	f.StringP(
+	// --no-color
+	f.BoolVar(
+		&noColor,
+		"no-color",
+		false,
+		"Disable colorized output for better compatibility with non-interactive shells",
+	)
+
+	// --config / -c
+	f.StringVarP(
+		&cfgFile,
 		"config",
 		"c",
 		pkg.DEFAULT_CONFIG_FILE,
-		"Path to the configuration file containing software entries",
+		"Path to the configuration file that defines software sources and tracking rules",
 	)
 
-	f.String(
+	// --version-file
+	f.StringVar(
+		&versionFile,
 		"version-file",
 		pkg.DEFAULT_VERSIONS_FILE,
-		"Path to the versions file containing software entries",
+		"Path to the file where currently detected versions are stored",
 	)
 
-	// f.StringP(
-	// 	"keyfile",
-	// 	"k",
-	// 	"keyfile.toml",
-	// 	"Path to the file containing API tokens and authentication keys",
-	// )
-
-	f.StringP(
+	// --output / -o
+	f.StringVarP(
+		&outputFormat,
 		"output",
 		"o",
 		"text",
-		"Set the output format; options are 'text', 'json' or 'yaml'",
-	)
-
-	f.Bool(
-		"no-color",
-		false,
-		"Strip ANSI color codes from the output for clean log files",
+		"Set the output format to display results; supported: 'text', 'json', 'yaml'",
 	)
 
 	colorFlags := func(s string) string {
