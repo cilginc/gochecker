@@ -29,3 +29,10 @@ var (
 	ErrPyPIDecode       = errors.New("pypi response decode failed")
 	ErrPyPIEmptyVersion = errors.New("pypi returned an empty version")
 )
+
+var (
+	// OCI provider errors
+	ErrOCIRequest      = errors.New("oci request failed")
+	ErrOCINotFound     = errors.New("oci image not found")
+	ErrOCIDecode       = errors.New("oci response decode failed")
+)

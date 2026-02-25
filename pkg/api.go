@@ -18,6 +18,7 @@ type VersionFile struct {
 type Provider struct {
 	GitHub *GitHub `yaml:"github,omitempty" json:"github,omitempty"`
 	PyPI   *PyPI   `yaml:"pypi,omitempty"   json:"pypi,omitempty"`
+	OCI    *OCI    `yaml:"oci,omitempty"    json:"oci,omitempty"`
 }
 
 type Result struct {
@@ -62,4 +63,8 @@ type GitHub struct {
 
 type PyPI struct {
 	Package string `yaml:"package" json:"package"`
+}
+
+type OCI struct {
+	Image string `yaml:"image" json:"image"`
 }

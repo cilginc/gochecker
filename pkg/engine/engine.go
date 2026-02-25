@@ -109,6 +109,12 @@ func checkPackage(ctx context.Context, p pkg.Package, githubToken string) pkg.Re
 		}
 		rawVersion, err = provider.LatestVersion(ctx)
 
+	case p.Provider.OCI != nil:
+		provider := &providers.OCI{
+			OCI: p.Provider.OCI,
+		}
+		rawVersion, err = provider.LatestVersion(ctx)
+
 	default:
 		res.Error = pkg.ErrUnknownProvider
 		return res
