@@ -29,6 +29,7 @@ func initFile(cmd *cobra.Command, args []string) error {
   - name: gochecker
     github:
       repo: cilginc/gochecker
+    prefix: "v"
 `
 
 	targetFile := cfgFile

@@ -5,6 +5,9 @@ type Package struct {
 	Name     string   `yaml:"name"    json:"name"`
 	Version  string   `yaml:"version" json:"version"`
 	Provider Provider `yaml:",inline" json:",inline"`
+
+	// Global Options
+	Prefix string `yaml:"prefix,omitempty" json:"prefix,omitempty"`
 }
 
 type VersionFile struct {

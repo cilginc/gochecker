@@ -3,6 +3,7 @@ package engine
 import (
 	"context"
 	"os"
+	"strings"
 	"sync"
 
 	"github.com/cilginc/gochecker/pkg"
@@ -91,21 +92,34 @@ func checkPackage(ctx context.Context, p pkg.Package, githubToken string) pkg.Re
 		OldVersion: p.Version,
 	}
 
+	var rawVersion string
+	var err error
+
 	if p.Provider.GitHub != nil {
 		provider := &providers.GitHub{
 			GitHub: p.Provider.GitHub,
 			Token:  githubToken,
 		}
 
-		version, err := provider.LatestVersion(ctx)
-		if err != nil {
-			res.Error = err
-			return res
-		}
-
-		res.NewVersion = version
-		res.Updated = version > p.Version
+		rawVersion, err = provider.LatestVersion(ctx)
+	}
+	if err != nil {
+		res.Error = err
+		return res
 	}
 
+	finalversion := processVersion(rawVersion, p)
+
+	res.NewVersion = finalversion
+	res.Updated = finalversion > p.Version
+
 	return res
+}
+
+func processVersion(v string, p pkg.Package) string {
+	if p.Prefix != "" {
+		v = strings.TrimPrefix(v, p.Prefix)
+	}
+
+	return v
 }
