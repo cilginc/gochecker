@@ -14,10 +14,8 @@ var listCmd = &cobra.Command{
 	Long: ui.Info(`Display a comprehensive list of all software packages defined 
 in your configuration. This shows the package names and their 
 currently recorded versions without performing an upstream check.`),
-
 	Example: ui.Success("  gochecker list\n") +
 		ui.Success("  gochecker list --config custom.yaml"),
-
 	SilenceUsage:  true,
 	SilenceErrors: true,
 	RunE:          runList,
