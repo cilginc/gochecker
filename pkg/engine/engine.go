@@ -9,6 +9,7 @@ import (
 	"github.com/cilginc/gochecker/pkg/providers"
 )
 
+// [TODO]: DRY clean the code here.
 func Execute(ctx context.Context, configPath ...string) ([]pkg.Result, error) {
 	cfg, err := pkg.CheckConfig(configPath...)
 	if err != nil {
@@ -71,7 +72,7 @@ func Run(ctx context.Context, packages []pkg.Package) []pkg.Result {
 				}
 
 				res.NewVersion = version
-				res.Updated = version != p.Version
+				res.Updated = version > p.Version
 			}
 
 			resultCh <- res
@@ -87,4 +88,17 @@ func Run(ctx context.Context, packages []pkg.Package) []pkg.Result {
 	}
 
 	return results
+}
+
+func Check(ctx context.Context, configPath ...string) ([]pkg.Result, error) {
+	cfg, err := pkg.CheckConfig(configPath...)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := cfg.LoadVersions(); err != nil {
+		return nil, err
+	}
+
+	return Run(ctx, cfg.Packages), nil
 }
