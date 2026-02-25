@@ -32,7 +32,14 @@ var (
 
 var (
 	// OCI provider errors
-	ErrOCIRequest      = errors.New("oci request failed")
-	ErrOCINotFound     = errors.New("oci image not found")
-	ErrOCIDecode       = errors.New("oci response decode failed")
+	ErrOCIRequest  = errors.New("oci request failed")
+	ErrOCINotFound = errors.New("oci image not found")
+	ErrOCIDecode   = errors.New("oci response decode failed")
+)
+
+var (
+	// AUR provider errors
+	ErrAURRequest  = errors.New("aur request failed")
+	ErrAURNotFound = errors.New("aur package not found")
+	ErrAURDecode   = errors.New("aur response decode failed")
 )
