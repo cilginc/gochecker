@@ -37,7 +37,7 @@ func (p *PyPI) LatestVersion(ctx context.Context) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("%w: %v", pkg.ErrPyPIRequest, err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	if resp.StatusCode == http.StatusNotFound {
 		return "", pkg.ErrPyPINotFound

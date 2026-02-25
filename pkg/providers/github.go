@@ -48,7 +48,7 @@ func (g *GitHub) fetchSingleTag(ctx context.Context, url, key string) (string, e
 	if err != nil {
 		return "", err
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	var data map[string]interface{}
 	if err := json.NewDecoder(resp.Body).Decode(&data); err != nil {
@@ -70,7 +70,7 @@ func (g *GitHub) fetchAndSort(
 	if err != nil {
 		return "", err
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	var items []map[string]interface{}
 	if err := json.NewDecoder(resp.Body).Decode(&items); err != nil {
