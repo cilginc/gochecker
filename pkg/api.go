@@ -20,6 +20,7 @@ type Provider struct {
 	PyPI   *PyPI   `yaml:"pypi,omitempty"   json:"pypi,omitempty"`
 	OCI    *OCI    `yaml:"oci,omitempty"    json:"oci,omitempty"`
 	AUR    *AUR    `yaml:"aur,omitempty"    json:"aur,omitempty"`
+	Git    *Git    `yaml:"git,omitempty"    json:"git,omitempty"`
 }
 
 type Result struct {
@@ -71,7 +72,13 @@ type OCI struct {
 }
 
 type AUR struct {
-	Package string `yaml:"package"                 json:"package"`
+	Package string `yaml:"package" json:"package"`
 	// Strips the pkgrel. (example: 1.0.2-1 -> 1.0.2)
 	StripRelease bool `yaml:"strip_release,omitempty" json:"strip_release,omitempty"`
+}
+
+type Git struct {
+	URL       string `yaml:"url"                  json:"url"`
+	UseCommit bool   `yaml:"use_commit,omitempty" json:"use_commit,omitempty"`
+	Branch    string `yaml:"branch,omitempty"     json:"branch,omitempty"`
 }

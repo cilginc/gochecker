@@ -43,3 +43,10 @@ var (
 	ErrAURNotFound = errors.New("aur package not found")
 	ErrAURDecode   = errors.New("aur response decode failed")
 )
+
+var (
+	// Git provider errors
+	ErrGitRequest        = errors.New("git remote request failed")
+	ErrGitBranchNotFound = errors.New("git branch not found")
+	ErrGitNoTags         = errors.New("no tags found in repository")
+)
