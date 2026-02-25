@@ -20,3 +20,12 @@ var (
 	ErrGitHubStatus    = errors.New("github unexpected status code")
 	ErrGitHubDecode    = errors.New("github response decode failed")
 )
+
+var (
+	// PyPI provider errors
+	ErrPyPIRequest      = errors.New("pypi request failed")
+	ErrPyPINotFound     = errors.New("pypi package not found")
+	ErrPyPIStatus       = errors.New("pypi unexpected status code")
+	ErrPyPIDecode       = errors.New("pypi response decode failed")
+	ErrPyPIEmptyVersion = errors.New("pypi returned an empty version")
+)

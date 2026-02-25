@@ -95,23 +95,33 @@ func checkPackage(ctx context.Context, p pkg.Package, githubToken string) pkg.Re
 	var rawVersion string
 	var err error
 
-	if p.Provider.GitHub != nil {
+	switch {
+	case p.Provider.GitHub != nil:
 		provider := &providers.GitHub{
 			GitHub: p.Provider.GitHub,
 			Token:  githubToken,
 		}
-
 		rawVersion, err = provider.LatestVersion(ctx)
+
+	case p.Provider.PyPI != nil:
+		provider := &providers.PyPI{
+			PyPI: p.Provider.PyPI,
+		}
+		rawVersion, err = provider.LatestVersion(ctx)
+
+	default:
+		res.Error = pkg.ErrUnknownProvider
+		return res
 	}
+
 	if err != nil {
 		res.Error = err
 		return res
 	}
 
-	finalversion := processVersion(rawVersion, p)
-
-	res.NewVersion = finalversion
-	res.Updated = finalversion > p.Version
+	finalVersion := processVersion(rawVersion, p)
+	res.NewVersion = finalVersion
+	res.Updated = (finalVersion != p.Version)
 
 	return res
 }

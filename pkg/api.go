@@ -17,9 +17,26 @@ type VersionFile struct {
 // Provider defines which upstream source is used.
 type Provider struct {
 	GitHub *GitHub `yaml:"github,omitempty" json:"github,omitempty"`
+	PyPI   *PyPI   `yaml:"pypi,omitempty"   json:"pypi,omitempty"`
 }
 
-// GitHub provider configuration.
+type Result struct {
+	Name       string
+	OldVersion string
+	NewVersion string
+	Updated    bool
+	Error      error
+}
+
+type Config struct {
+	Packages []Package `yaml:"packages" json:"packages"`
+}
+
+const DEFAULT_CONFIG_FILE = ".gochecker.yaml"
+const DEFAULT_VERSIONS_FILE = ".gochecker-lock.json"
+
+const GITHUB_PAT_TOKEN_ENV_VAR = "GITHUB_TOKEN"
+
 type GitHub struct {
 	// Required: "owner/repo"
 	Repo string `yaml:"repo" json:"repo"`
@@ -43,19 +60,6 @@ type GitHub struct {
 	Query        string `yaml:"query,omitempty"          json:"query,omitempty"`
 }
 
-type Config struct {
-	Packages []Package `yaml:"packages" json:"packages"`
+type PyPI struct {
+	Package string `yaml:"package" json:"package"`
 }
-
-type Result struct {
-	Name       string
-	OldVersion string
-	NewVersion string
-	Updated    bool
-	Error      error
-}
-
-const DEFAULT_CONFIG_FILE = ".gochecker.yaml"
-const DEFAULT_VERSIONS_FILE = ".gochecker-lock.json"
-
-const GITHUB_PAT_TOKEN_ENV_VAR = "GITHUB_TOKEN"
