@@ -17,6 +17,7 @@ func (cfg *Config) LoadVersions(path ...string) error {
 	if err != nil {
 		if errors.Is(err, os.ErrNotExist) {
 			// No versions file yet that's fine
+			// [TODO]: probably not fine
 			return nil
 		}
 		return fmt.Errorf("%w: %v", ErrVersionsRead, err)
