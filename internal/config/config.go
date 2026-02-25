@@ -8,7 +8,7 @@ import (
 func CheckConfig(path ...string) (*pkg.Config, error) {
 	cfg, err := pkg.CheckConfig()
 	if err != nil {
-		ui.CliError("%v", err)
+		_ = ui.CliError("%v", err)
 		return nil, err
 	}
 	return cfg, nil

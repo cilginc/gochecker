@@ -43,7 +43,7 @@ func runCheck(cmd *cobra.Command, args []string) error {
 	for _, r := range results {
 
 		if r.Error != nil {
-			ui.CliError("%s: %v", r.Name, r.Error)
+			_ = ui.CliError("%s: %v", r.Name, r.Error)
 			continue
 		}
 

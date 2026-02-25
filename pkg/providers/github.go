@@ -35,7 +35,7 @@ func (g *GitHub) LatestVersion(ctx context.Context) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("%w: %v", pkg.ErrGitHubRequest, err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	// Rate limit handling
 	if resp.StatusCode == http.StatusForbidden {
