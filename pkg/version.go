@@ -53,6 +53,10 @@ func (cfg *Config) SaveVersions(path ...string) error {
 		}
 	}
 
+	if len(vf.Packages) == 0 {
+		return nil
+	}
+
 	data, err := json.MarshalIndent(vf, "", "  ")
 	if err != nil {
 		return fmt.Errorf("%w: %v", ErrVersionsParse, err)
