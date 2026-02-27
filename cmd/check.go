@@ -2,7 +2,9 @@ package cmd
 
 import (
 	"context"
+	"fmt"
 
+	"github.com/cilginc/gochecker/internal/config"
 	"github.com/cilginc/gochecker/internal/output"
 	"github.com/cilginc/gochecker/internal/ui"
 	"github.com/cilginc/gochecker/pkg/engine"
@@ -33,46 +35,62 @@ func runCheck(cmd *cobra.Command, args []string) error {
 	ctx := context.Background()
 	showNewOnly, _ := cmd.Flags().GetBool("new")
 
-	results, err := engine.Check(ctx, cfgFile)
+	paths, err := config.GetConfigPaths(recursive, cfgFile, recursiveDir)
 	if err != nil {
-		return ui.CliError("%s", err)
+		return err
 	}
 
-	if outputFormat != "text" {
-		return output.RenderResults(outputFormat, results)
-	}
+	for i, cfgPath := range paths {
+		if i > 0 {
+			fmt.Println()
+		}
 
-	ui.CliInfo("Scanning for updates using configuration: %s", cfgFile)
-
-	foundUpdate := false
-
-	for _, r := range results {
-
-		if r.Error != nil {
-			_ = ui.CliError("%s: %v", r.Name, r.Error)
+		results, err := engine.Check(ctx, cfgPath)
+		if err != nil {
+			_ = ui.CliError("%s: %s", cfgPath, err)
 			continue
 		}
 
-		if r.Updated {
-			foundUpdate = true
-			ui.CliInfo("%s: %s → %s",
-				r.Name,
-				r.OldVersion,
-				r.NewVersion,
-			)
-		} else if !showNewOnly {
-			ui.CliSuccess("%s: up to date (%s)",
-				r.Name,
-				r.OldVersion,
-			)
+		if outputFormat != "text" {
+			if err := output.RenderResults(outputFormat, results); err != nil {
+				return err
+			}
+			continue
 		}
+
+		ui.CliInfo("Scanning for updates using configuration: %s", cfgPath)
+
+		foundUpdate := false
+
+		for _, r := range results {
+
+			if r.Error != nil {
+				_ = ui.CliError("%s: %v", r.Name, r.Error)
+				continue
+			}
+
+			if r.Updated {
+				foundUpdate = true
+				ui.CliInfo("%s: %s → %s",
+					r.Name,
+					r.OldVersion,
+					r.NewVersion,
+				)
+			} else if !showNewOnly {
+				ui.CliSuccess("%s: up to date (%s)",
+					r.Name,
+					r.OldVersion,
+				)
+			}
+		}
+
+		if showNewOnly && !foundUpdate {
+			ui.CliSuccess("No updates found.")
+			continue
+		}
+
+		ui.CliSuccess("Check completed!")
 	}
 
-	if showNewOnly && !foundUpdate {
-		ui.CliSuccess("No updates found.")
-		return nil
-	}
-
-	ui.CliSuccess("Check completed!")
 	return nil
 }

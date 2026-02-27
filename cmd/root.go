@@ -14,6 +14,8 @@ var (
 	versionFile  string = pkg.DEFAULT_VERSIONS_FILE
 	outputFormat string = "text"
 	noColor      bool   = false
+	recursive    bool   = false
+	recursiveDir string
 )
 
 var rootCmd = &cobra.Command{
@@ -73,6 +75,24 @@ func init() {
 		"o",
 		"text",
 		"Set the output format to display results; supported: 'text', 'json', 'yaml'",
+	)
+
+	// --recursive / -r
+	f.BoolVarP(
+		&recursive,
+		"recursive",
+		"r",
+		false,
+		"Recursively scan a directory for configuration files",
+	)
+
+	// --dir / -d
+	f.StringVarP(
+		&recursiveDir,
+		"dir",
+		"d",
+		".",
+		"Directory to scan when using --recursive (defaults to current directory)",
 	)
 
 	colorFlags := func(s string) string {

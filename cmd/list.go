@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 
+	"github.com/cilginc/gochecker/internal/config"
 	"github.com/cilginc/gochecker/internal/output"
 	"github.com/cilginc/gochecker/internal/ui"
 	"github.com/cilginc/gochecker/pkg"
@@ -27,41 +28,56 @@ func init() {
 }
 
 func runList(cmd *cobra.Command, args []string) error {
-	cfg, err := pkg.CheckConfig(cfgFile)
+	paths, err := config.GetConfigPaths(recursive, cfgFile, recursiveDir)
 	if err != nil {
-		return ui.CliError("%s", err)
+		return err
 	}
 
-	if err := cfg.LoadVersions(); err != nil {
-		ui.CliWarn("No version history found. Showing names only.")
-	}
-
-	if outputFormat != "text" {
-		return output.RenderPackages(outputFormat, cfg.Packages)
-	}
-
-	ui.CliInfo("Tracked Packages in %s:", cfgFile)
-	fmt.Println("--------------------------------------------------")
-
-	if len(cfg.Packages) == 0 {
-		fmt.Println("No packages found in the configuration.")
-		return nil
-	}
-
-	for _, p := range cfg.Packages {
-		version := p.Version
-		if version == "" {
-			version = ui.Warn("no version recorded")
+	for i, cfgPath := range paths {
+		if i > 0 {
+			fmt.Println()
 		}
 
-		fmt.Printf("%s %-20s %s\n",
-			ui.Info("•"),
-			ui.Title(p.Name),
-			ui.Success(version))
-	}
+		cfg, err := pkg.CheckConfig(cfgPath)
+		if err != nil {
+			_ = ui.CliError("%s: %s", cfgPath, err)
+			continue
+		}
 
-	fmt.Println("--------------------------------------------------")
-	fmt.Printf("Total: %d packages monitored.\n", len(cfg.Packages))
+		if err := cfg.LoadVersions(); err != nil {
+			ui.CliWarn("No version history found for %s. Showing names only.", cfgPath)
+		}
+
+		if outputFormat != "text" {
+			if err := output.RenderPackages(outputFormat, cfg.Packages); err != nil {
+				return err
+			}
+			continue
+		}
+
+		ui.CliInfo("Tracked Packages in %s:", cfgPath)
+		fmt.Println("--------------------------------------------------")
+
+		if len(cfg.Packages) == 0 {
+			fmt.Println("No packages found in the configuration.")
+			continue
+		}
+
+		for _, p := range cfg.Packages {
+			version := p.Version
+			if version == "" {
+				version = ui.Warn("no version recorded")
+			}
+
+			fmt.Printf("%s %-20s %s\n",
+				ui.Info("•"),
+				ui.Title(p.Name),
+				ui.Success(version))
+		}
+
+		fmt.Println("--------------------------------------------------")
+		fmt.Printf("Total: %d packages monitored.\n", len(cfg.Packages))
+	}
 
 	return nil
 }
