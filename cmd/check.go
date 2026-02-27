@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/cilginc/gochecker/internal/config"
 	"github.com/cilginc/gochecker/internal/output"
@@ -31,35 +32,65 @@ func init() {
 		"Only display packages that have a newer version available")
 }
 
+// [TODO]: Clean the code here. 
 func runCheck(cmd *cobra.Command, args []string) error {
 	ctx := context.Background()
 	showNewOnly, _ := cmd.Flags().GetBool("new")
 
 	paths, err := config.GetConfigPaths(recursive, cfgFile, recursiveDir)
 	if err != nil {
-		return err
+		return ui.CliError("failed to get config paths: %w", err)
 	}
 
-	var allResults []pkg.Result
+	if len(paths) == 0 {
+		ui.CliWarn("No configuration files found.")
+		return nil
+	}
 
-	for _, cfgPath := range paths {
-		results, err := engine.Check(ctx, cfgPath)
+	allConfig := &pkg.Config{
+		Packages: []pkg.Package{},
+	}
+
+	var processErrors []error
+
+	for _, path := range paths {
+		cfg, err := pkg.CheckConfig(path)
 		if err != nil {
-			_ = ui.CliError("%s: %s", cfgPath, err)
+			errMsg := fmt.Errorf("[%s] could not be read: %v", path, err)
+			_ = ui.CliError("%v", errMsg)
+			processErrors = append(processErrors, errMsg)
 			continue
 		}
-		allResults = append(allResults, results...)
+		allConfig.Packages = append(allConfig.Packages, cfg.Packages...)
 	}
 
+	if len(allConfig.Packages) == 0 {
+		if len(processErrors) > 0 {
+			return fmt.Errorf(
+				"failed to process any packages; %d files had errors",
+				len(processErrors),
+			)
+		}
+		ui.CliWarn("No packages found to process.")
+		return nil
+	}
+
+	if err := allConfig.LoadVersions(); err != nil {
+		return fmt.Errorf("failed to load version history: %w", err)
+	}
+
+	ui.CliInfo("Checking updates for %d packages...", len(allConfig.Packages))
+	result := engine.Run(ctx, allConfig.Packages)
+
 	if outputFormat != "text" {
-		return output.RenderResults(outputFormat, allResults)
+		return output.RenderResults(outputFormat, result)
 	}
 
 	ui.CliInfo("Scanning for updates using configuration: %s", cfgFile)
 
 	foundUpdate := false
 
-	for _, r := range allResults {
+	for _, r := range result {
 		if r.Error != nil {
 			_ = ui.CliError("%s: %v", r.Name, r.Error)
 			continue

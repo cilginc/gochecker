@@ -28,6 +28,8 @@ func init() {
 	rootCmd.AddCommand(updateCmd)
 }
 
+// [TODO]: Clean the code here.
+// We can add engine.execute which want []string paths.
 func runUpdate(cmd *cobra.Command, args []string) error {
 	ctx := context.Background()
 	paths, err := config.GetConfigPaths(recursive, cfgFile, recursiveDir)
