@@ -32,12 +32,9 @@ func runList(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
+	var allPackages []pkg.Package
 
-	for i, cfgPath := range paths {
-		if i > 0 {
-			fmt.Println()
-		}
-
+	for _, cfgPath := range paths {
 		cfg, err := pkg.CheckConfig(cfgPath)
 		if err != nil {
 			_ = ui.CliError("%s: %s", cfgPath, err)
@@ -45,39 +42,38 @@ func runList(cmd *cobra.Command, args []string) error {
 		}
 
 		if err := cfg.LoadVersions(); err != nil {
-			ui.CliWarn("No version history found for %s. Showing names only.", cfgPath)
+			ui.CliWarn("No version history found for %s.", cfgPath)
 		}
 
-		if outputFormat != "text" {
-			if err := output.RenderPackages(outputFormat, cfg.Packages); err != nil {
-				return err
-			}
-			continue
-		}
-
-		ui.CliInfo("Tracked Packages in %s:", cfgPath)
-		fmt.Println("--------------------------------------------------")
-
-		if len(cfg.Packages) == 0 {
-			fmt.Println("No packages found in the configuration.")
-			continue
-		}
-
-		for _, p := range cfg.Packages {
-			version := p.Version
-			if version == "" {
-				version = ui.Warn("no version recorded")
-			}
-
-			fmt.Printf("%s %-20s %s\n",
-				ui.Info("•"),
-				ui.Title(p.Name),
-				ui.Success(version))
-		}
-
-		fmt.Println("--------------------------------------------------")
-		fmt.Printf("Total: %d packages monitored.\n", len(cfg.Packages))
+		allPackages = append(allPackages, cfg.Packages...)
 	}
+
+	if outputFormat != "text" {
+		return output.RenderPackages(outputFormat, allPackages)
+	}
+
+	ui.CliInfo("Tracked Packages (All Configurations):")
+	fmt.Println("--------------------------------------------------")
+
+	if len(allPackages) == 0 {
+		fmt.Println("No packages found in any configuration.")
+		return nil
+	}
+
+	for _, p := range allPackages {
+		version := p.Version
+		if version == "" {
+			version = ui.Warn("no version recorded")
+		}
+
+		fmt.Printf("%s %-20s %s\n",
+			ui.Info("•"),
+			ui.Title(p.Name),
+			ui.Success(version))
+	}
+
+	fmt.Println("--------------------------------------------------")
+	fmt.Printf("Total: %d packages monitored across all files.\n", len(allPackages))
 
 	return nil
 }

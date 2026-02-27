@@ -7,6 +7,7 @@ import (
 	"github.com/cilginc/gochecker/internal/config"
 	"github.com/cilginc/gochecker/internal/output"
 	"github.com/cilginc/gochecker/internal/ui"
+	"github.com/cilginc/gochecker/pkg"
 	"github.com/cilginc/gochecker/pkg/engine"
 	"github.com/spf13/cobra"
 )
@@ -29,56 +30,61 @@ func init() {
 
 func runUpdate(cmd *cobra.Command, args []string) error {
 	ctx := context.Background()
-
 	paths, err := config.GetConfigPaths(recursive, cfgFile, recursiveDir)
 	if err != nil {
 		return err
 	}
 
-	for i, cfgPath := range paths {
-		if i > 0 {
-			fmt.Println()
-		}
+	var allResults []pkg.Result
 
-		res, err := engine.Execute(ctx, cfgPath)
+	for _, path := range paths {
+		res, err := engine.Execute(ctx, path)
 		if err != nil {
-			_ = ui.CliError("%s: %s", cfgPath, err)
+			_ = ui.CliError("Failed to update %s: %v", path, err)
+			continue
+		}
+		allResults = append(allResults, res...)
+	}
+
+	if outputFormat != "text" {
+		return output.RenderResults(outputFormat, allResults)
+	}
+
+	ui.CliInfo("Processing updates for %d packages across all configurations...", len(allResults))
+	fmt.Println("--------------------------------------------------")
+
+	updatedCount := 0
+	for _, v := range allResults {
+		if v.Error != nil {
+			fmt.Printf("%s %-15s: %v\n", ui.Warn("✖"), v.Name, v.Error)
 			continue
 		}
 
-		if outputFormat != "text" {
-			if err := output.RenderResults(outputFormat, res); err != nil {
-				return err
-			}
-			continue
-		}
-
-		ui.CliInfo("Processing updates for %d packages (%s)...", len(res), cfgPath)
-		fmt.Println("--------------------------------------------------")
-
-		updatedCount := 0
-		for _, v := range res {
-			if v.Error != nil {
-				fmt.Printf("%s %-15s: %v\n", ui.Warn("✖"), v.Name, v.Error)
-				continue
-			}
-
-			if v.Updated {
-				fmt.Printf("%s %-15s: %s -> %s\n",
-					ui.Success("↑"), v.Name, ui.Warn(v.OldVersion), ui.Success(v.NewVersion))
-				updatedCount++
-			} else {
-				fmt.Printf("%s %-15s: %s %s\n",
-					ui.Info("-"), v.Name, v.OldVersion, ui.Info("(synced)"))
-			}
-		}
-		fmt.Println("--------------------------------------------------")
-
-		if updatedCount > 0 {
-			ui.CliSuccess("%d packages were updated and synchronized.", updatedCount)
+		if v.Updated {
+			fmt.Printf("%s %-15s: %s -> %s\n",
+				ui.Success("↑"),
+				v.Name,
+				ui.Warn(v.OldVersion),
+				ui.Success(v.NewVersion),
+			)
+			updatedCount++
 		} else {
-			ui.CliSuccess("All records are already in sync. No changes needed.")
+			fmt.Printf("%s %-15s: %s %s\n",
+				ui.Info("-"),
+				v.Name,
+				v.OldVersion,
+				ui.Info("(synced)"),
+			)
 		}
+	}
+	fmt.Println("--------------------------------------------------")
+
+	if updatedCount > 0 {
+		ui.CliSuccess("%d packages were updated and synchronized.", updatedCount)
+	} else if len(allResults) > 0 {
+		ui.CliSuccess("All records are already in sync. No changes needed.")
+	} else {
+		ui.CliWarn("No packages were found to process.")
 	}
 
 	return nil
