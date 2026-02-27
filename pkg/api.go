@@ -24,11 +24,11 @@ type Provider struct {
 }
 
 type Result struct {
-	Name       string `json:"name" yaml:"name"`
-	OldVersion string `json:"old_version" yaml:"old_version"`
-	NewVersion string `json:"new_version" yaml:"new_version"`
-	Updated    bool   `json:"updated" yaml:"updated"`
-	Error      error  `json:"-" yaml:"-"`
+	Name       string `json:"name"            yaml:"name"`
+	OldVersion string `json:"old_version"     yaml:"old_version"`
+	NewVersion string `json:"new_version"     yaml:"new_version"`
+	Updated    bool   `json:"updated"         yaml:"updated"`
+	Error      error  `json:"-"               yaml:"-"`
 	ErrorMsg   string `json:"error,omitempty" yaml:"error,omitempty"`
 }
 
@@ -38,6 +38,7 @@ type Config struct {
 
 const DEFAULT_CONFIG_FILE = ".gochecker.yaml"
 const DEFAULT_VERSIONS_FILE = ".gochecker-lock.json"
+const DEFAULT_SRCINFO_FILE = ".SRCINFO"
 
 const GITHUB_PAT_TOKEN_ENV_VAR = "GITHUB_TOKEN"
 

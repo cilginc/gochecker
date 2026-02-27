@@ -8,6 +8,7 @@ var (
 	ErrConfigNotFound  = errors.New("config file not found")
 	ErrConfigRead      = errors.New("failed to read configuration file")
 	ErrVersionsRead    = errors.New("failed to read versions file")
+	ErrSRCINFORead     = errors.New("failed to read SRCINFO file")
 	ErrVersionsWrite   = errors.New("failed to write versions file")
 	ErrVersionsParse   = errors.New("failed to parse versions file")
 )
