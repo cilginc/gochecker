@@ -14,10 +14,6 @@ type OCI struct {
 	*pkg.OCI
 }
 
-type ociTagResponse struct {
-	Tags []string `json:"tags"`
-}
-
 // [TODO]: We probably don't need a library for this.
 func (o *OCI) LatestVersion(ctx context.Context) (string, error) {
 	repo, err := name.NewRepository(o.Image)

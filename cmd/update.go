@@ -34,7 +34,7 @@ func runUpdate(cmd *cobra.Command, args []string) error {
 	ctx := context.Background()
 	paths, err := config.GetConfigPaths(recursive, cfgFile, recursiveDir)
 	if err != nil {
-		return ui.CliError("failed to get config paths: %w", err)
+		return ui.CliError("failed to get config paths: %s", err)
 	}
 
 	if len(paths) == 0 {
