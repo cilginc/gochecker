@@ -24,11 +24,12 @@ type Provider struct {
 }
 
 type Result struct {
-	Name       string
-	OldVersion string
-	NewVersion string
-	Updated    bool
-	Error      error
+	Name       string `json:"name" yaml:"name"`
+	OldVersion string `json:"old_version" yaml:"old_version"`
+	NewVersion string `json:"new_version" yaml:"new_version"`
+	Updated    bool   `json:"updated" yaml:"updated"`
+	Error      error  `json:"-" yaml:"-"`
+	ErrorMsg   string `json:"error,omitempty" yaml:"error,omitempty"`
 }
 
 type Config struct {

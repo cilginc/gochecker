@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 
+	"github.com/cilginc/gochecker/internal/output"
 	"github.com/cilginc/gochecker/internal/ui"
 	"github.com/cilginc/gochecker/pkg"
 	"github.com/spf13/cobra"
@@ -33,6 +34,10 @@ func runList(cmd *cobra.Command, args []string) error {
 
 	if err := cfg.LoadVersions(); err != nil {
 		ui.CliWarn("No version history found. Showing names only.")
+	}
+
+	if outputFormat != "text" {
+		return output.RenderPackages(outputFormat, cfg.Packages)
 	}
 
 	ui.CliInfo("Tracked Packages in %s:", cfgFile)

@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/cilginc/gochecker/internal/output"
 	"github.com/cilginc/gochecker/internal/ui"
 	"github.com/cilginc/gochecker/pkg/engine"
 	"github.com/spf13/cobra"
@@ -30,6 +31,10 @@ func runUpdate(cmd *cobra.Command, args []string) error {
 	res, err := engine.Execute(ctx, cfgFile)
 	if err != nil {
 		return ui.CliError("%s", err)
+	}
+
+	if outputFormat != "text" {
+		return output.RenderResults(outputFormat, res)
 	}
 
 	ui.CliInfo("Processing updates for %d packages...", len(res))

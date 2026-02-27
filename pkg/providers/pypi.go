@@ -58,4 +58,3 @@ func (p *PyPI) LatestVersion(ctx context.Context) (string, error) {
 
 	return data.Info.Version, nil
 }
-
