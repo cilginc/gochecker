@@ -14,21 +14,34 @@ Gochecker allows you to track upstream versions from various sources like GitHub
 
 ## 📥 Installation
 
+### Using Go (recommended)
+
 Ensure you have Go installed on your system, then run:
 
 ```bash
 go install github.com/cilginc/gochecker@latest
 ```
 
+### Using AUR (Arch Linux)
+
+If you're on Arch Linux, you can install it from the AUR:
+
+```bash
+yay -S gochecker
+```
+
 ## 🚀 Quick Start
 
 1. **Initialize your configuration:**
+
    ```bash
    gochecker init
    ```
+
    This creates a default `.gochecker.yaml` file.
 
 2. **Check for updates:**
+
    ```bash
    gochecker check
    ```
@@ -71,13 +84,13 @@ packages:
 
 ### Supported Providers (will add more in the future)
 
-| Provider | Description | Required Fields |
-| :--- | :--- | :--- |
-| **GitHub** | Track releases or tags from GitHub | `repo` (owner/repo) |
-| **AUR** | Monitor packages from the Arch User Repository | `package` |
-| **PyPI** | Check for Python package updates | `package` |
-| **OCI** | Monitor container image tags | `image` |
-| **Git** | Track versions from any Git repository | `url` |
+| Provider   | Description                                    | Required Fields     |
+| :--------- | :--------------------------------------------- | :------------------ |
+| **GitHub** | Track releases or tags from GitHub             | `repo` (owner/repo) |
+| **AUR**    | Monitor packages from the Arch User Repository | `package`           |
+| **PyPI**   | Check for Python package updates               | `package`           |
+| **OCI**    | Monitor container image tags                   | `image`             |
+| **Git**    | Track versions from any Git repository         | `url`               |
 
 ## ⌨️ CLI Usage
 
