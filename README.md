@@ -1,10 +1,10 @@
-# 🚀 Gochecker
+# Gochecker
 
 A fast and modern version monitoring tool for software packages, inspired by nvchecker and powered by Go's concurrency model.
 
 Gochecker allows you to track upstream versions from various sources like GitHub, AUR, PyPI, OCI registries, and Git repositories. It helps you stay updated with the latest releases of your favorite software.
 
-## ✨ Features
+## Features
 
 - **Concurrent Scanning**: Leverages Go's goroutines for high-performance, parallel version checks.
 - **Multiple Providers**: Support for GitHub, AUR, PyPI, OCI (Container Registries), and Git.
@@ -12,11 +12,9 @@ Gochecker allows you to track upstream versions from various sources like GitHub
 - **Flexible Output**: Supports colorized text, JSON, and YAML output formats for easy integration with other tools.
 - **Version Persistence**: Tracks current versions in a local lock file (`.gochecker-lock.json`).
 
-## 📥 Installation
+## Installation
 
 ### Using Go (recommended)
-
-Ensure you have Go installed on your system, then run:
 
 ```bash
 go install github.com/cilginc/gochecker@latest
@@ -24,13 +22,11 @@ go install github.com/cilginc/gochecker@latest
 
 ### Using AUR (Arch Linux)
 
-If you're on Arch Linux, you can install it from the AUR:
-
 ```bash
 yay -S gochecker
 ```
 
-## 🚀 Quick Start
+## Quick Start
 
 1. **Initialize your configuration:**
 
@@ -51,7 +47,7 @@ yay -S gochecker
    gochecker update
    ```
 
-## 🛠 Configuration
+## Configuration
 
 The configuration is managed via a `.gochecker.yaml` file. Here is an example:
 
@@ -92,7 +88,7 @@ packages:
 | **OCI**    | Monitor container image tags                   | `image`             |
 | **Git**    | Track versions from any Git repository         | `url`               |
 
-## ⌨️ CLI Usage
+## CLI Usage
 
 ```text
 Usage:
@@ -113,11 +109,11 @@ Flags:
       --no-color              Disable colorized output
 ```
 
-## 🔑 Environment Variables
+## Environment Variables
 
 - `GITHUB_TOKEN`: Recommended for GitHub provider to avoid rate limiting.
 - `NO_COLOR`: Disable colorized output.
 
-## 📄 License
+## License
 
 Distributed under the GPL-3.0 License. See `LICENSE` for more information.
