@@ -94,7 +94,7 @@ func checkSRCINFO(path ...string) (name string, version string, err error) {
 	if err != nil {
 		return "", "", err
 	}
-	defer file.Close()
+	defer func() { _ = file.Close() }()
 
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
